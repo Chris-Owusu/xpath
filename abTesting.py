@@ -1,4 +1,4 @@
-
+import requests
 from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -43,8 +43,23 @@ def basicAuth():
 
 def brokenImage():
     driver.find_element(By.CSS_SELECTOR, "a[href='/broken_images']").click()
-    image = driver.find_element(By.TAG_NAME, "img")
+    images = driver.find_elements(By.TAG_NAME, "img")
 
+    # Check each image for broken status
+    for image in images:
+        src = image.get_attribute("src")
+        response = requests.head(src)
+        if response.status_code != 200:
+            print(f"Broken image found: {src}")
+
+def brokenLinks():
+    links = driver.find_elements(By.TAG_NAME, 'a')
+
+    for link in links:
+        src = link.get_attribute('href')
+        response = requests.head(src)
+        if response.status_code != 200:
+            print(f'Broken link found: {src}')
 
 def checkBoxes():
     driver.find_element(By.CSS_SELECTOR, "a[href='/checkboxes']").click()
@@ -247,6 +262,7 @@ def infiniteScroll():
 # addRemoveElements()
 # basicAuth()
 # brokenImage()
+brokenLinks()
 # checkBoxes()
 # contextMenu()
 # digestAuthentication()
@@ -265,3 +281,4 @@ def infiniteScroll():
 # infiniteScroll()
 
 # driver.quit()
+driver.close()
